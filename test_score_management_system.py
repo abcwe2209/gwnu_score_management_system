@@ -12,7 +12,10 @@ class TestScoreManagementSystem(unittest.TestCase):
         self.m_open2 = mock_open(read_data= "1,강호민,85,90,95\n2,김광호,80,70,60\n")
         self.m_open3 = mock_open(read_data= "1,강호민,85,90,95\n2,김광호,80,70,60\n14,이주경,70,70,80\n")
 
-
+        self.m_write_open_1 = mock_open()
+        self.m_w = mock_open().return_value
+        self.m_write_open_1.side_effect = [self.m_open3.return_value,self.m_w]
+    
     def test_constructor(self):
         sms = ScoreManagementSystem()
         self.assertIsNotNone(sms)
@@ -104,6 +107,42 @@ class TestScoreManagementSystem(unittest.TestCase):
 
             result = sms.sort("rank","des")
             self.assertEqual('2,김광호,80,70,60,210,70,3\n14,이주경,70,70,80,220,73.33,2\n1,강호민,85,90,95,270,90,1',result)
+
+    def test_write_1(self):
+
+        with patch("score_management_system.open",self.m_write_open_1):
+            sms = ScoreManagementSystem()
+            sms.read('score.csv')
+            sms.write('rank.csv')
+
+        self.m_w.write.assert_called_with('1,강호민,85,90,95,270,90,1\n2,김광호,80,70,60,210,70,2\n14,이주경,70,70,80,220,73.33,3')
+
+    def test_write_2(self):
+
+        with patch("score_management_system.open",self.m_write_open_1):
+            sms = ScoreManagementSystem()
+            sms.read('score.csv')
+            sms.write('rank.csv','register','des')
+
+        self.m_w.write.assert_called_with('14,이주경,70,70,80,220,73.33,3\n2,김광호,80,70,60,210,70,2\n1,강호민,85,90,95,270,90,1')
+
+    def test_write_3(self):
+
+        with patch("score_management_system.open",self.m_write_open_1):
+            sms = ScoreManagementSystem()
+            sms.read('score.csv')
+            sms.write('rank.csv','rank','asc')
+
+        self.m_w.write.assert_called_with('1,강호민,85,90,95,270,90,1\n14,이주경,70,70,80,220,73.33,2\n2,김광호,80,70,60,210,70,3')
+
+    def test_write_4(self):
+
+        with patch("score_management_system.open",self.m_write_open_1):
+            sms = ScoreManagementSystem()
+            sms.read('score.csv')
+            sms.write('rank.csv','rank','des')
+
+        self.m_w.write.assert_called_with('2,김광호,80,70,60,210,70,3\n14,이주경,70,70,80,220,73.33,2\n1,강호민,85,90,95,270,90,1')
 
 
 if __name__ == "__main__":

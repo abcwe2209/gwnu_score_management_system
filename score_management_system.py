@@ -20,7 +20,7 @@ class ScoreManagementSystem:
             self._score[num] = Score(line.strip())
         return len(self._score)
 
-    def _make_cars_string(self, score,order_way):
+    def _make_cars_string(self, score,order_key,order_way):
         result = ""
         if order_way== 'asc':
             num =1
@@ -37,7 +37,10 @@ class ScoreManagementSystem:
                 result = result + str(round(item.avg,2)) + ','
             elif item.avg % 1 ==0:
                 result = result + str(int(item.avg)) + ','
-            if order_way== 'asc':
+            
+            if order_key =='register':
+                result = result + str(key) + '\n'
+            elif order_way== 'asc':
                 result = result + str(num) + '\n'
                 num +=1
             elif order_way== 'des':
@@ -58,5 +61,10 @@ class ScoreManagementSystem:
         elif order_key == "rank" and order_way == "des":
             sorted_score = sorted(self._score.items(),key = key_rank )
 
-        result = self._make_cars_string(sorted_score,order_way)
+        result = self._make_cars_string(sorted_score,order_key,order_way)
         return result
+
+    def write(self,file_name,order_key='register',order_way='asc'):
+        with open(file_name, 'wt', encoding= 'utf-8') as fo:
+            result = self.sort(order_key,order_way)
+            fo.write(result)
