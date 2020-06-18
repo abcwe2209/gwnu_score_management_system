@@ -1,3 +1,5 @@
+from score import Score
+
 class ScoreManagementSystem:
     def __init__(self):
         self._score={}
@@ -13,4 +15,5 @@ class ScoreManagementSystem:
         num = 0
         for line in lines:
             num += 1
-            #self._score[num] = 
+            self._score[num] = Score(line.strip())
+        return len(self._score)
